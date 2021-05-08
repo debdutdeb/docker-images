@@ -27,3 +27,17 @@ jobs:
           context: stop-container
           push: true
           tags: debdutdeb/stop-demo:v2
+
+      - name: Build and Push Expose Demo
+        uses: docker/build-push-action@v2
+        with:
+          context: expose
+          push: true
+          tags: debdutdeb/expose-demo:v1
+
+      - name: Build and Push Noexpose Demo
+        uses: docker/build-push-action@v2
+        with:
+          context: noexpose-container
+          push: true
+          tags: debdutdeb/noexpose-demo:v1
