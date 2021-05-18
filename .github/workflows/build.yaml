@@ -41,3 +41,10 @@ jobs:
           context: noexpose
           push: true
           tags: debdutdeb/noexpose-demo:v1
+
+      - name: Build and Push RocketChatBuild Host
+        uses: docker/build-push-action@v2
+        with:
+          context: rocketchat-build
+          push: true
+          tags: debdutdeb/rocket.chat.build:latest
