@@ -1,5 +1,30 @@
 version: "3.7"
 
 services:
-    MeteorRocketChat:
-        image: ""
+    RocketChatBuild:
+        image: debdutdeb/meteorjs
+        user: meteorjs
+        working_dir: ${BUILD_TARGET_DIR}
+        ports:
+            - 
+                target: 3000
+                published: 3000
+                protocol: tcp
+        environment: [BUILD_TARGET_DIR]
+        volumes:
+            -
+                type: bind
+                source: ${BUILD_SOURCE_DIR}
+                target: ${BUILD_TARGET_DIR}
+            -
+                type: volume
+                source: MeteorPackages
+                target: /home/meteorjs/.meteor/packages
+        command: |
+            sh -c "
+                meteor npm install && \
+                meteor npm start
+            "
+
+volumes:
+    MeteorPackages: {}
