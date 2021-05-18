@@ -1,0 +1,36 @@
+#! /bin/sh
+
+error () {
+    >&2 printf "[ERROR] %s\n" "$*"
+    usage 1
+}
+
+info () {
+    printf "[INFO] %s\n" "$*"
+}
+
+usage () {
+    cat <<EOF
+Usage:
+    build_and_run -h    [help]
+    build_and_run [RocketChat_Repo]
+EOF
+    exit ${1:-0}
+}
+
+main () {
+
+    [ -z "$1" ] && error repository directory not specified.
+    [ "$1" = "-h" ] && usage
+
+    >.env cat <<EOF
+BUILD_SOURCE_DIR=$(realpath $1)
+BUILD_TARGET_DIR=/$(basename $1)
+EOF
+
+    COMPOSE_NO_CLI=false docker-compose run --service-ports RocketChatBuild
+    docker-compose down
+    
+}
+
+main "$@"
