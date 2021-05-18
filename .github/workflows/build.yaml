@@ -47,4 +47,4 @@ jobs:
         with:
           context: rocketchat-build
           push: true
-          tags: debdutdeb/rocket.chat.build:latest
+          tags: debdutdeb/meteorjs:latest
