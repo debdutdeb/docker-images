@@ -1,3 +1,5 @@
-docker-compose.yaml
-build/
-meteor.tar.gz
+docker-compose.yml
+.env
+build_and_run
+README.md
+running.png
