@@ -33,7 +33,7 @@ validate_repo () {
 
     # ID checking is good and all, but does it really make sense though :/
     # Checking the remote url is good enough.
-    cd $1
+    cd $1 && \
     git remote get-url origin | grep -iqE '.+[:/](rocketchat/rocket.chat)(.git)?$' \
         && debug repository validated. \
         || error repository validation failed.
