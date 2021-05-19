@@ -7,6 +7,7 @@ error () {
 
 debug () {
     [ "$DEBUG" ] && printf "[DEBUG] %s\n" "$*"
+    true
 }
 
 usage () {
@@ -34,11 +35,11 @@ validate_repo () {
     # ID checking is good and all, but does it really make sense though :/
     # Checking the remote url is good enough.
     if [ -d "$1" ]; then
-        cd $1 && \
-        git remote get-url origin | grep -iqE '.+[:/](rocketchat/rocket.chat)(.git)?$' \
-            && debug repository validated. \
-            || error repository validation failed.
-        cd ->/dev/null
+        (cd $1 && \
+            git remote get-url origin | \
+            grep -iqE '.+[:/](rocketchat/rocket.chat)(.git)?$') || \
+            error repository validation failed.
+        debug repository validated.
     else
         error $1 directory doesn\'t exist.
     fi
