@@ -22,7 +22,7 @@ validate_repo () {
     local id=$(curl -s \
         -H "Accept: application/vnd.github.v3+json" \
         https://api.github.com/repos/$(cd $1 && \
-            git remote get-url origin | sed -E 's|.+(rocketchat/rocket.chat)(.git)?|\1|i') \
+            git remote get-url origin | sed -E 's|.+(rocketchat/rocket.chat)(.git)?$|\1|i') \
         | jq '.id // -1' -r)
     debug detected id: $id
     [ "$id" -eq "$RocketChat_REPO_ID" ] && true || false
