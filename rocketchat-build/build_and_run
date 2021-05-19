@@ -19,13 +19,24 @@ EOF
 }
 
 validate_repo () {
-    local id=$(curl -s \
-        -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/repos/$(cd $1 && \
-            git remote get-url origin | sed -E 's|.+(rocketchat/rocket.chat)(.git)?$|\1|i') \
-        | jq '.id // -1' -r)
-    debug detected id: $id
-    [ "$id" -eq "$RocketChat_REPO_ID" ] && true || false
+    # local id=$(curl -s \
+    #     -H "Accept: application/vnd.github.v3+json" \
+    #     https://api.github.com/repos/$(cd $1 && \
+    #         git remote get-url origin | sed -nE 's|.+[:/](rocketchat/rocket.chat)(.git)?$|\1|ip') \
+    #     | jq '.id // -1' -r)
+
+    # debug detected id: $id
+
+    # [ "$id" -eq "$RocketChat_REPO_ID" ] \
+    #     && debug repository validated. \
+    #     || error repository validation failed.
+
+    # ID checking is good and all, but does it really make sense though :/
+    # Checking the remote url is good enough.
+    cd $1
+    git remote get-url origin | grep -iqE '.+[:/](rocketchat/rocket.chat)(.git)?$' \
+        && debug repository validated. \
+        || error repository validation failed.
 }
 
 main () {
@@ -37,10 +48,7 @@ main () {
     build_host_dir=$(realpath $1) # Because this path HAS to be absolute.
     build_dir=/$(basename $1) # I like it this way.
 
-    validate_repo $build_host_dir || error \
-        repository validation failed.
-
-    debug repository validated.
+    (validate_repo $build_host_dir) || exit 1
 
     >.env cat <<EOF
 BUILD_HOST_DIR=$build_host_dir 
@@ -54,6 +62,6 @@ EOF
     
 }
 
-readonly RocketChat_REPO_ID=35866694
+# readonly RocketChat_REPO_ID=35866694
 
 main "$@"
