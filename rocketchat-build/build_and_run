@@ -5,8 +5,8 @@ error () {
     usage 1
 }
 
-info () {
-    printf "[INFO] %s\n" "$*"
+debug () {
+    [ "$DEBUG" ] && printf "[DEBUG] %s\n" "$*"
 }
 
 usage () {
@@ -18,19 +18,42 @@ EOF
     exit ${1:-0}
 }
 
+validate_repo () {
+    local id=$(curl -s \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/$(cd $1 && \
+            git remote get-url origin | sed -E 's|.+(rocketchat/rocket.chat)(.git)?|\1|i') \
+        | jq '.id // -1' -r)
+    debug detected id: $id
+    [ "$id" -eq "$RocketChat_REPO_ID" ] && true || false
+}
+
 main () {
 
     [ -z "$1" ] && error repository directory not specified.
     [ "$1" = "-h" ] && usage
 
+    local build_host_dir build_dir
+    build_host_dir=$(realpath $1) # Because this path HAS to be absolute.
+    build_dir=/$(basename $1) # I like it this way.
+
+    validate_repo $build_host_dir || error \
+        repository validation failed.
+
+    debug repository validated.
+
     >.env cat <<EOF
-BUILD_SOURCE_DIR=$(realpath $1)
-BUILD_TARGET_DIR=/$(basename $1)
+BUILD_HOST_DIR=$build_host_dir 
+BUILD_DIR=$build_dir 
 EOF
 
-    COMPOSE_NO_CLI=false docker-compose run --service-ports RocketChatBuild
+    debug $(cat .env)
+
+    COMPOSE_INTERACTIVE_NO_CLI=false docker-compose run --service-ports RocketChatBuild
     docker-compose down
     
 }
+
+readonly RocketChat_REPO_ID=35866694
 
 main "$@"
