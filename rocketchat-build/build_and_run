@@ -37,6 +37,7 @@ validate_repo () {
     git remote get-url origin | grep -iqE '.+[:/](rocketchat/rocket.chat)(.git)?$' \
         && debug repository validated. \
         || error repository validation failed.
+    cd ->/dev/null
 }
 
 main () {
@@ -48,7 +49,7 @@ main () {
     build_host_dir=$(realpath $1) # Because this path HAS to be absolute.
     build_dir=/$(basename $1) # I like it this way.
 
-    (validate_repo $build_host_dir) || exit 1
+    validate_repo $build_host_dir
 
     >.env cat <<EOF
 BUILD_HOST_DIR=$build_host_dir 
