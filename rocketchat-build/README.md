@@ -3,7 +3,8 @@
 ## 1. Create a project directory
 
 ```
-mkdir RocketChatBuild && cd !$
+mkdir RocketChatBuild
+cd !$
 ```
 
 Clone the RocketChat repository here.
